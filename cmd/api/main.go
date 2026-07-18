@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/kwizl/social_media/internal/db"
 	"github.com/kwizl/social_media/internal/env"
 	"github.com/kwizl/social_media/internal/store"
 )
@@ -10,9 +11,29 @@ import (
 func main() {
 	cfg := config{
 		addr: env.GetString("ADDR", ":8080"),
+		db: dbConfig{
+			addr:         env.GetString("DB_ADDR", "postgresql://postgres:postgres@localhost:5432/SocialMedia?sslmode=disable"),
+			maxOpenConns: env.GetInt("DB_MAX_OPEN_CONNS", 30),
+			maxIdleConns: env.GetInt("DB_MAX_IDLE_CONNS", 30),
+			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
+		},
 	}
 
-	store := store.NewStorage(nil)
+	db, err := db.New(
+		cfg.db.addr,
+		cfg.db.maxOpenConns,
+		cfg.db.maxIdleConns,
+		cfg.db.maxIdleTime,
+	)
+
+	if err != nil {
+		log.Panic(err)
+	}
+
+	defer db.Close()
+	log.Printf("Database connection pool established")
+
+	store := store.NewStorage(db)
 
 	app := &application{
 		config: cfg,
