@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/kwizl/social_media/internal/env"
+	"github.com/kwizl/social_media/internal/store"
 )
 
 func main() {
@@ -11,8 +12,11 @@ func main() {
 		addr: env.GetString("ADDR", ":8080"),
 	}
 
+	store := store.NewStorage(nil)
+
 	app := &application{
 		config: cfg,
+		store:  store,
 	}
 
 	mux := app.mount()
