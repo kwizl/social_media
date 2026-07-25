@@ -1,1 +1,1 @@
-CREATE DATABASE SocialMedia;
+CREATE DATABASE socialmedia;
