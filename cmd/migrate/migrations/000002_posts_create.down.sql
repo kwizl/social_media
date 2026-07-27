@@ -1,0 +1,6 @@
+BEGIN;
+
+DELETE FROM schema_migrations;
+DROP TABLE IF EXISTS posts;
+
+COMMIT;
